@@ -1,8 +1,8 @@
-package io.netopen.hotbitmapgg.frescodemo;
+package io.netopen.hotbitmapgg.frescodemo.ui;
 
+import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -12,12 +12,11 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.netopen.hotbitmapgg.frescodemo.R;
 import io.netopen.hotbitmapgg.frescodemo.adapter.GankMeiziRecyclerAdapter;
 import io.netopen.hotbitmapgg.frescodemo.entity.MeiziInfo;
 import io.netopen.hotbitmapgg.frescodemo.network.RetrofitHelper;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity
@@ -49,80 +48,41 @@ public class MainActivity extends AppCompatActivity
     private void initView()
     {
 
-        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener()
-        {
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary,
+                R.color.colorPrimaryDark, R.color.colorAccent);
+        mSwipeRefreshLayout.setOnRefreshListener(() -> {
 
-            @Override
-            public void onRefresh()
-            {
-
-            }
         });
-        mSwipeRefreshLayout.post(new Runnable()
-        {
+        mSwipeRefreshLayout.post(() -> {
 
-            @Override
-            public void run()
-            {
-
-                mSwipeRefreshLayout.setRefreshing(true);
-                initData();
-            }
+            mSwipeRefreshLayout.setRefreshing(true);
+            initData();
         });
 
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mAdapter = new GankMeiziRecyclerAdapter(mRecyclerView, meizis);
         mRecyclerView.setAdapter(mAdapter);
+        mAdapter.setOnItemClickListener((position, holder) ->
+                MeiziDetailsActivity.launch(MainActivity.this, meizis.get(position).getUrl()));
     }
 
     private void initData()
     {
 
         RetrofitHelper.getGankMeiziApi()
-                .getMeiziInfos(20, 1)
-                .filter(new Func1<MeiziInfo,Boolean>()
-                {
-
-                    @Override
-                    public Boolean call(MeiziInfo meiziInfo)
-                    {
-
-                        return !meiziInfo.isError();
-                    }
-                })
-                .map(new Func1<MeiziInfo,List<MeiziInfo.ResultsBean>>()
-                {
-
-                    @Override
-                    public List<MeiziInfo.ResultsBean> call(MeiziInfo meiziInfo)
-                    {
-
-                        return meiziInfo.getResults();
-                    }
-                })
+                .getMeiziInfos(100, 1)
+                .filter(meiziInfo -> !meiziInfo.isError())
+                .map(MeiziInfo::getResults)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<MeiziInfo.ResultsBean>>()
-                {
+                .subscribe(resultsBeans -> {
 
-                    @Override
-                    public void call(List<MeiziInfo.ResultsBean> resultsBeans)
-                    {
+                    meizis.addAll(resultsBeans);
+                    finishTask();
+                }, throwable -> {
 
-                        meizis.addAll(resultsBeans);
-                        finishTask();
-                    }
-                }, new Action1<Throwable>()
-                {
-
-                    @Override
-                    public void call(Throwable throwable)
-                    {
-
-                        Log.i(TAG, throwable.getMessage());
-                    }
+                    Log.i(TAG, throwable.getMessage());
                 });
     }
 

@@ -6,6 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.controller.AbstractDraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
 
 import java.util.List;
@@ -48,17 +50,17 @@ public class GankMeiziRecyclerAdapter extends AbsRecyclerViewAdapter
             MeiziInfo.ResultsBean resultsBean = meizis.get(position);
             //设置url加载图片
             viewHolder.mSimpleDraweeView.setImageURI(Uri.parse(resultsBean.getUrl()));
-//            //设置图片加载控制器
-//            AbstractDraweeController controller = Fresco.newDraweeControllerBuilder()
-//                    //重试之后要加载的图片url地址
-//                    .setUri(resultsBean.getUrl())
-//                    //设置点击重试是否开启
-//                    .setTapToRetryEnabled(true)
-//                    //设置旧的Controller
-//                    .setOldController(viewHolder.mSimpleDraweeView.getController())
-//                    .build();
-//
-//            viewHolder.mSimpleDraweeView.setController(controller);
+            //设置图片加载控制器
+            AbstractDraweeController controller = Fresco.newDraweeControllerBuilder()
+                    //重试之后要加载的图片url地址
+                    .setUri(resultsBean.getUrl())
+                    //设置点击重试是否开启
+                    .setTapToRetryEnabled(true)
+                    //设置旧的Controller
+                    .setOldController(viewHolder.mSimpleDraweeView.getController())
+                    .build();
+
+            viewHolder.mSimpleDraweeView.setController(controller);
         }
         super.onBindViewHolder(holder, position);
     }

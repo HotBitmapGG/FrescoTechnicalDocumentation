@@ -9,7 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * RecycleView通用适配器
+ * Created by hcc on 2016/11/27 12:09
+ * 100332338@qq.com
  */
 public abstract class AbsRecyclerViewAdapter extends RecyclerView.Adapter<AbsRecyclerViewAdapter.ClickableViewHolder>
 {
@@ -99,33 +100,21 @@ public abstract class AbsRecyclerViewAdapter extends RecyclerView.Adapter<AbsRec
     public void onBindViewHolder(final ClickableViewHolder holder, final int position)
     {
 
-        holder.getParentView().setOnClickListener(new View.OnClickListener()
-        {
+        holder.getParentView().setOnClickListener(v -> {
 
-            @Override
-            public void onClick(View v)
+            if (itemClickListener != null)
             {
-
-                if (itemClickListener != null)
-                {
-                    itemClickListener.onItemClick(position, holder);
-                }
+                itemClickListener.onItemClick(position, holder);
             }
         });
-        holder.getParentView().setOnLongClickListener(new View.OnLongClickListener()
-        {
+        holder.getParentView().setOnLongClickListener(v -> {
 
-            @Override
-            public boolean onLongClick(View v)
+            if (itemLongClickListener != null)
             {
-
-                if (itemLongClickListener != null)
-                {
-                    return itemLongClickListener.onItemLongClick(position, holder);
-                } else
-                {
-                    return false;
-                }
+                return itemLongClickListener.onItemLongClick(position, holder);
+            } else
+            {
+                return false;
             }
         });
     }
