@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 
@@ -27,6 +26,7 @@ public class MeiziDetailsActivity extends AppCompatActivity
 
     @Bind(R.id.image_details)
     SimpleDraweeView mSimpleDraweeView;
+
 
     private String url;
 
@@ -53,16 +53,7 @@ public class MeiziDetailsActivity extends AppCompatActivity
 
         //加载大图
         mSimpleDraweeView.setImageURI(Uri.parse(url));
-        mSimpleDraweeView.setOnClickListener(new View.OnClickListener()
-        {
-
-            @Override
-            public void onClick(View view)
-            {
-
-                Snackbar.make(mSimpleDraweeView, "点击了",Snackbar.LENGTH_SHORT).show();
-            }
-        });
+        mSimpleDraweeView.setOnClickListener(view -> Snackbar.make(mSimpleDraweeView, "点击了", Snackbar.LENGTH_SHORT).show());
     }
 
 

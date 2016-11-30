@@ -69,9 +69,8 @@ public class MainActivity extends AppCompatActivity
 
     private void initData()
     {
-
         RetrofitHelper.getGankMeiziApi()
-                .getMeiziInfos(100, 1)
+                .getMeiziInfos(20, 1)
                 .filter(meiziInfo -> !meiziInfo.isError())
                 .map(MeiziInfo::getResults)
                 .subscribeOn(Schedulers.io())
