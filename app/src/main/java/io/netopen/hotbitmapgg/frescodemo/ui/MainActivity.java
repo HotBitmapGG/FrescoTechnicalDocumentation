@@ -5,6 +5,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -21,6 +22,9 @@ import rx.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity
 {
+
+    @Bind(R.id.toolBar)
+    Toolbar mToolbar;
 
     @Bind(R.id.swipe_refresh)
     SwipeRefreshLayout mSwipeRefreshLayout;
@@ -42,17 +46,22 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         ButterKnife.bind(this);
+        initToolBar();
         initView();
+    }
+
+    private void initToolBar()
+    {
+
+        mToolbar.setTitle("FrescoDemo");
+        setSupportActionBar(mToolbar);
     }
 
     private void initView()
     {
 
-        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary,
-                R.color.colorPrimaryDark, R.color.colorAccent);
-        mSwipeRefreshLayout.setOnRefreshListener(() -> {
-
-        });
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.cardview_dark_background);
+        mSwipeRefreshLayout.setOnRefreshListener(() -> mSwipeRefreshLayout.setRefreshing(false));
         mSwipeRefreshLayout.post(() -> {
 
             mSwipeRefreshLayout.setRefreshing(true);
@@ -64,11 +73,14 @@ public class MainActivity extends AppCompatActivity
         mAdapter = new GankMeiziRecyclerAdapter(mRecyclerView, meizis);
         mRecyclerView.setAdapter(mAdapter);
         mAdapter.setOnItemClickListener((position, holder) ->
-                MeiziDetailsActivity.launch(MainActivity.this, meizis.get(position).getUrl()));
+                MeiziDetailsActivity.launch(MainActivity.this,
+                        meizis.get(position).getUrl(),
+                        meizis.get(position).getDesc()));
     }
 
     private void initData()
     {
+
         RetrofitHelper.getGankMeiziApi()
                 .getMeiziInfos(20, 1)
                 .filter(meiziInfo -> !meiziInfo.isError())
