@@ -10,7 +10,7 @@ import rx.Observable;
  * 100332338@qq.com
  */
 
-public interface GankMeiziService
+public interface ApiService
 {
 
     @GET("data/福利/{number}/{page}")

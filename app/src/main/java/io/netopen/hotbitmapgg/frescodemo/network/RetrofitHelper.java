@@ -5,7 +5,7 @@ import java.io.File;
 import java.util.concurrent.TimeUnit;
 
 import io.netopen.hotbitmapgg.frescodemo.FrescoDemoApp;
-import io.netopen.hotbitmapgg.frescodemo.network.api.GankMeiziService;
+import io.netopen.hotbitmapgg.frescodemo.network.api.ApiService;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -32,7 +32,7 @@ public class RetrofitHelper
      *
      * @return
      */
-    public static GankMeiziService getGankMeiziApi()
+    public static ApiService getGankMeiziApi()
     {
 
         Retrofit retrofit = new Retrofit.Builder()
@@ -42,7 +42,7 @@ public class RetrofitHelper
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
-        return retrofit.create(GankMeiziService.class);
+        return retrofit.create(ApiService.class);
     }
 
 

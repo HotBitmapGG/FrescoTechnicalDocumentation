@@ -1,146 +1,136 @@
 package io.netopen.hotbitmapgg.frescodemo.adapter;
 
+import java.util.List;
+
 import android.content.Context;
 import android.support.annotation.IdRes;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * Created by hcc on 2016/11/27 12:09
+ * Created by hcc on 2016/12/16 14:36
  * 100332338@qq.com
+ * FrescoDemo
+ *
+ * @HotBitmapGG RecyclerView基类
  */
-public abstract class AbsRecyclerViewAdapter extends RecyclerView.Adapter<AbsRecyclerViewAdapter.ClickableViewHolder>
-{
+public abstract class AbsRecyclerViewAdapter<T>
+    extends RecyclerView.Adapter<AbsRecyclerViewAdapter.ClickableViewHolder> {
 
-    private Context context;
+  private Context context;
 
-    protected RecyclerView mRecyclerView;
+  public List<T> mDataSources;
 
-    protected List<RecyclerView.OnScrollListener> mListeners = new ArrayList<RecyclerView.OnScrollListener>();
+  private OnItemClickListener itemClickListener;
 
-    public AbsRecyclerViewAdapter(RecyclerView recyclerView)
-    {
+  private OnItemLongClickListener itemLongClickListener;
 
-        this.mRecyclerView = recyclerView;
-        this.mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener()
-        {
 
-            @Override
-            public void onScrollStateChanged(RecyclerView rv, int newState)
-            {
+  public void setOnItemClickListener(OnItemClickListener listener) {
 
-                for (RecyclerView.OnScrollListener listener : mListeners)
-                {
-                    listener.onScrollStateChanged(rv, newState);
-                }
-            }
+    this.itemClickListener = listener;
+  }
 
-            @Override
-            public void onScrolled(RecyclerView rv, int dx, int dy)
-            {
 
-                for (RecyclerView.OnScrollListener listener : mListeners)
-                {
-                    listener.onScrolled(rv, dx, dy);
-                }
-            }
-        });
+  public void setOnItemLongClickListener(OnItemLongClickListener listener) {
+
+    this.itemLongClickListener = listener;
+  }
+
+
+  /**
+   * 设置RecyclerView数据源
+   */
+  public void setDataSources(List<T> dataSources) {
+
+    this.mDataSources = dataSources;
+  }
+
+
+  /**
+   * 设置RecyclerView的count
+   */
+  @Override
+  public int getItemCount() {
+
+    return mDataSources == null ? 0 : mDataSources.size();
+  }
+
+
+  /**
+   * 设置Context
+   */
+  public void bindContext(Context context) {
+
+    this.context = context;
+  }
+
+
+  /**
+   * 获取Context
+   */
+  public Context getContext() {
+
+    return this.context;
+  }
+
+
+  /**
+   * 重写onBindViewHolder设置item的点击和长按事件的监听
+   */
+  @Override
+  public void onBindViewHolder(final ClickableViewHolder holder, final int position) {
+
+    holder.getParentView().setOnClickListener(v -> {
+
+      if (itemClickListener != null) {
+        itemClickListener.onItemClick(position, holder);
+      }
+    });
+    holder.getParentView()
+        .setOnLongClickListener(v -> itemLongClickListener != null &&
+            itemLongClickListener.onItemLongClick(position, holder));
+  }
+
+
+  /**
+   * Item点击事件接口
+   */
+  public interface OnItemClickListener {
+
+    void onItemClick(int position, ClickableViewHolder holder);
+  }
+
+  /**
+   * Item长按事件接口
+   */
+  public interface OnItemLongClickListener {
+
+    boolean onItemLongClick(int position, ClickableViewHolder holder);
+  }
+
+  public static class ClickableViewHolder extends RecyclerView.ViewHolder {
+
+    private View parentView;
+
+
+    public ClickableViewHolder(View itemView) {
+
+      super(itemView);
+      this.parentView = itemView;
     }
 
-    public void addOnScrollListener(RecyclerView.OnScrollListener listener)
-    {
 
-        mListeners.add(listener);
+    public View getParentView() {
+
+      return parentView;
     }
 
-    public interface OnItemClickListener
-    {
 
-        public void onItemClick(int position, ClickableViewHolder holder);
+    @SuppressWarnings("unchecked")
+    public <T extends View> T $(@IdRes int id) {
+
+      return (T) parentView.findViewById(id);
     }
-
-    public interface OnItemLongClickListener
-    {
-
-        public boolean onItemLongClick(int position, ClickableViewHolder holder);
-    }
-
-    private OnItemClickListener itemClickListener;
-
-    private OnItemLongClickListener itemLongClickListener;
-
-    public void setOnItemClickListener(OnItemClickListener listener)
-    {
-
-        this.itemClickListener = listener;
-    }
-
-    public void setOnItemLongClickListener(OnItemLongClickListener listener)
-    {
-
-        this.itemLongClickListener = listener;
-    }
-
-    public void bindContext(Context context)
-    {
-
-        this.context = context;
-    }
-
-    public Context getContext()
-    {
-
-        return this.context;
-    }
-
-    @Override
-    public void onBindViewHolder(final ClickableViewHolder holder, final int position)
-    {
-
-        holder.getParentView().setOnClickListener(v -> {
-
-            if (itemClickListener != null)
-            {
-                itemClickListener.onItemClick(position, holder);
-            }
-        });
-        holder.getParentView().setOnLongClickListener(v -> {
-
-            if (itemLongClickListener != null)
-            {
-                return itemLongClickListener.onItemLongClick(position, holder);
-            } else
-            {
-                return false;
-            }
-        });
-    }
-
-    public class ClickableViewHolder extends RecyclerView.ViewHolder
-    {
-
-        private View parentView;
-
-        public ClickableViewHolder(View itemView)
-        {
-
-            super(itemView);
-            this.parentView = itemView;
-        }
-
-        public View getParentView()
-        {
-
-            return parentView;
-        }
-
-        public <T extends View> T $(@IdRes int id)
-        {
-
-            return (T) parentView.findViewById(id);
-        }
-    }
+  }
 }
