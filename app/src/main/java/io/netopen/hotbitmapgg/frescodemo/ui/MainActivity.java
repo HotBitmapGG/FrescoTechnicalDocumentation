@@ -32,6 +32,7 @@ public class MainActivity extends RxAppCompatActivity {
   RecyclerView mRecyclerView;
 
   private List<MeiziInfo.ResultsBean> meizis = new ArrayList<>();
+
   private GankMeiziRecyclerAdapter mAdapter;
 
 
